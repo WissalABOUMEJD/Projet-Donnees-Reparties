@@ -19,6 +19,6 @@ public class HdfsClient {
 
 	public static void main(String[] args) {
 		// java HdfsClient <read|write> <txt|kv> <file>
-		// appel des méthodes précédentes depuis la ligne de commande
+		// appel des méthodes précédentes depuis la ligne de commande.
 	}
 }
