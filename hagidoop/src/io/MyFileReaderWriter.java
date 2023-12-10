@@ -6,7 +6,9 @@ import java.util.Scanner;
 
 public class MyFileReaderWriter implements FileReaderWriter{
 	private String fname; // Nom du fichier.
+	
     private String mode; // Mode du fichier (FMT_TXT ou FMT_KV).
+    
     private BufferedReader reader; // Utilisé pour lire à partir du fichier.
     private BufferedWriter writer; // Utilisé pour écrire dans le fichier.
     private long index; // Index utilisé pour le parcours du fichier.
