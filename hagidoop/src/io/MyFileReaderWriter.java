@@ -24,27 +24,31 @@ public class MyFileReaderWriter implements FileReaderWriter{
     
 	@Override
 	public KV read() {
-		KV kv = null;
-        try {
-            String line = reader.readLine();
-            if (line != null) {
-                kv = new KV(String.valueOf(index++), line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return kv;
+		try {
+			String line = reader.readLine();
+			if (line != null) {
+				// ça dépent de la forme de fichier!!!!!!!!!!!!!!!!
+				String[] parts = line.split("-");
+				if (parts.length == 2) {
+					return new KV(parts[0], parts[1]);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
 	public void write(KV record) {
 		try {
-            writer.write(record.v);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-		
+			writer.write(record.toString());
+			writer.newLine();
+			// Pour vider le tampon et s'assurer que tout est ecrits.
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	@Override
