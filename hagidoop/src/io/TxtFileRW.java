@@ -59,7 +59,6 @@ public class TxtFileRW implements FileReaderWriter{
                 this.reader = new BufferedReader(new FileReader(this.fname));
             } else if (mode.equals("write")) {
                 this.writer = new BufferedWriter(new FileWriter(this.fname));
-            // I'm not sure!!!!!!!!!!!!!!!!!!!!!!!!!!
             } else if (mode.equals("delete")) {
             	File fileToDelete = new File(this.fname);
                 if (fileToDelete.delete()) {
