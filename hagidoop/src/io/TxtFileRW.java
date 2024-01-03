@@ -2,36 +2,35 @@ package io;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.File;
 import interfaces.FileReaderWriter;
 import interfaces.KV;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 public class TxtFileRW implements FileReaderWriter{
 	private String mode;
 	private String fname; // Nom du fichier.    
     private BufferedReader reader; // Utilisé pour lire à partir du fichier.
     private BufferedWriter writer; // Utilisé pour écrire dans le fichier.
-    private long index; // Index utilisé pour le parcours du fichier.
+    private long index = 0; // Index utilisé pour le parcours du fichier.
+    private KV kv;
     
     // Constructeur
-    public TxtFileRW() {
-    	this.mode = null;
-        this.fname = null;
-        this.reader = null;
-        this.writer = null;
-        this.index = 0;
+    public TxtFileRW(String fname) {
+        this.fname = fname;
     }
     
 	@Override
 	public KV read() {
 		try {
-			String line = reader.readLine();
-			if (line != null) {
-				return new KV(String.valueOf(index++), line);
+			kv.v = reader.readLine();
+			kv.k = String.valueOf(index++);
+			if (kv.v != null) {
+				index += kv.v.length();
+				return kv;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -42,10 +41,9 @@ public class TxtFileRW implements FileReaderWriter{
 	@Override
 	public void write(KV record) {
 		try {
-			writer.write(record.toString());
+			writer.write(record.v, 0, record.v.length());
 			writer.newLine();
-			// Pour vider le tampon et s'assurer que tout est ecrits.
-			writer.flush();
+			index += record.v.length();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
@@ -53,24 +51,13 @@ public class TxtFileRW implements FileReaderWriter{
 
 	@Override
 	public void open(String mode) {
-		this.mode = mode;
         try {
+        	this.mode = mode;
             if (mode.equals("read")) {
-                this.reader = new BufferedReader(new FileReader(this.fname));
+                this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(fname)));
             } else if (mode.equals("write")) {
-                this.writer = new BufferedWriter(new FileWriter(this.fname));
-            } else if (mode.equals("delete")) {
-            	File fileToDelete = new File(this.fname);
-                if (fileToDelete.delete()) {
-                    System.out.println("Fichier supprimé avec succès.");
-                } else {
-                    System.err.println("Échec de la suppression du fichier.");
-                }
-            } else {
-                System.err.println("Format non pris en charge.");
+                this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fname)));
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,13 +68,9 @@ public class TxtFileRW implements FileReaderWriter{
 	public void close() {
 		try {
 	        if (mode.equals("read")) {
-	            if (reader != null) {
-	                reader.close();
-	            }
+	        	reader.close();
 	        } else if (mode.equals("write")) {
-	            if (writer != null) {
-	                writer.close();
-	            }
+	        	writer.close();
 	        }
 	    } catch (IOException e) {
 	        e.printStackTrace();

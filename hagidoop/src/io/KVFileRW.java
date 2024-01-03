@@ -20,8 +20,8 @@ public class KVFileRW implements FileReaderWriter{
     private long index; // Index utilisé pour le parcours du fichier.
     
     // Constructeur
-    public KVFileRW() {
-        this.fname = null;
+    public KVFileRW(String fname) {
+        this.fname = fname;
         this.mode = null;
         this.reader = null;
         this.writer = null;
