@@ -24,14 +24,29 @@ public class ImplNetworkReaderWriter extends UnicastRemoteObject implements Netw
 
 	@Override
 	public KV read() {
-		// TODO Auto-generated method stub
+		try {
+			String line = reader.readLine();
+			if (line != null) {
+				String[] parts = line.split("-");
+				if (parts.length == 2) {
+					return new KV(parts[0], parts[1]);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	@Override
 	public void write(KV record) {
-		// TODO Auto-generated method stub
-		
+		try {
+			writer.write(record.toString());
+			writer.newLine();
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	@Override

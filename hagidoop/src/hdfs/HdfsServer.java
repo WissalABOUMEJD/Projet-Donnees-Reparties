@@ -14,7 +14,7 @@ import interfaces.FileReaderWriter;
 import interfaces.KV;
 import io.TxtFileRW;
 import config.Project;
-
+import config.Project;
 
 public class HdfsServer extends Thread {
 
@@ -28,7 +28,7 @@ public class HdfsServer extends Thread {
     public static void main(String[] args) {
         try {
         	for (int i:listServeur) {
-	            int port = Integer.parseInt(args[0]);  //////////////////////////////////////
+	            int port = Project.listServeur[i];  //////////////////////////////////////
 	            ServerSocket serverSocket = new ServerSocket(port);
 	            System.out.println("Server started on port: " + args[0]);
 	            while (true) {
@@ -80,14 +80,22 @@ public class HdfsServer extends Thread {
     	String[] tableau = message.split(":"); 
 
         // Read the content of the file
-        String fileContent = readFileContent(tableau[1]);
-
-        // Send the content back to the client
-        oos.writeObject(fileContent);
+    	FileReader fr = new FileReader(tableau[1]);
+        BufferedReader buff = new BufferedReader(fr);
+        
+     // Message à envoyer
+        String str = new String();
+        String line;
+        while((line = buff.readLine()) != null){
+            str += line + "\n";
+        }
+        buff.close();
+        oos.writeObject(str);
     }
 
     private void handleWrite(ObjectInputStream ois, ObjectOutputStream oos) throws IOException, ClassNotFoundException {
-        // Read the filename from the client
+       
+    	// Read the filename from the client
     	String message = (String) ois.readObject();
     	String[] tableau = message.split(":"); 
 
@@ -109,16 +117,6 @@ public class HdfsServer extends Thread {
         deleteFile(filename);
     }
 
-    private String readFileContent(String fileName) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            StringBuilder content = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
-            }
-            return content.toString();
-        }
-    }
 
     private void deleteFile(String fileName) {
         File file = new File(fileName);
