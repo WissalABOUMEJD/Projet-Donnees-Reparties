@@ -27,16 +27,26 @@ public class HdfsServer extends Thread {
 
     public static void main(String[] args) {
         try {
-        	for (int i:listServeur) {
-	            int port = Project.listServeur[i];  //////////////////////////////////////
-	            ServerSocket serverSocket = new ServerSocket(port);
-	            System.out.println("Server started on port: " + args[0]);
-	            while (true) {
-	                Socket clientSocket = serverSocket.accept();
-	                Thread t = new HdfsServer(clientSocket);
-	                t.start();
-	            }
-        	}
+//        	for (int i:listServeur) {
+//	            int port = Project.listServeur[i];  //////////////////////////////////////
+//	            ServerSocket serverSocket = new ServerSocket(port);
+//	            System.out.println("Server started on port: " + args[0]);
+//	            while (true) {
+//	                Socket clientSocket = serverSocket.accept();
+//	                Thread t = new HdfsServer(clientSocket);
+//	                t.start();
+//	            }
+//        	}
+        	
+        	
+        	int port = Project.listServeur[2];  //////////////////////////////////////
+            ServerSocket serverSocket = new ServerSocket(port);
+            System.out.println("Server started on port du serveur 2: ");
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                Thread t = new HdfsServer(clientSocket);
+                t.start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

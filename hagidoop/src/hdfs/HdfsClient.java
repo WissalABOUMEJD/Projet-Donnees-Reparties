@@ -1,6 +1,8 @@
 package hdfs;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -144,17 +146,21 @@ public class HdfsClient {
 		// java HdfsClient <read|write> <txt|kv> <file>
 		// appel des méthodes précédentes depuis la ligne de commande.
 		try {
-            if (args.length<3) {usage(); return;}
-            switch (args[0]) {
+			System.out.println("enter a cmd");
+			BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+			String msg = userInput.readLine();
+			String[] arg = msg.split(" ");
+            if (arg.length<3) {usage(); return;}
+            switch (arg[0]) {
               case "read": HdfsRead(args[2]); break;
               case "delete": HdfsDelete(args[2]); break;
               case "write": 
                 int fmt;
-                if (args.length < 3) {usage(); return;}
-                if (args[1].equals("txt")) fmt = FileReaderWriter.FMT_TXT;
-                else if(args[1].equals("kv")) fmt = FileReaderWriter.FMT_KV;
+                if (arg.length < 3) {usage(); return;}
+                if (arg[1].equals("txt")) fmt = FileReaderWriter.FMT_TXT;
+                else if(arg[1].equals("kv")) fmt = FileReaderWriter.FMT_KV;
                 else {usage(); return;}
-                HdfsWrite(fmt,args[2]);
+                HdfsWrite(fmt,arg[2]);
             }	
         } catch (Exception ex) {
             ex.printStackTrace();
