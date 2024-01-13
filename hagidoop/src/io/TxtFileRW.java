@@ -53,6 +53,7 @@ public class TxtFileRW implements FileReaderWriter{
 	public void open(String mode) {
         try {
         	this.mode = mode;
+        	this.kv = new KV();
             if (mode.equals("read")) {
                 this.reader = new BufferedReader(new InputStreamReader(new FileInputStream(fname)));
             } else if (mode.equals("write")) {

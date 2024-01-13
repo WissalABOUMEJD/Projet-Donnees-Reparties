@@ -1,137 +1,106 @@
 package hdfs;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
+import java.io.*;
+import java .net.*;
 
-import interfaces.FileReaderWriter;
-import interfaces.KV;
-import io.TxtFileRW;
-import config.Project;
-import config.Project;
-
-public class HdfsServer extends Thread {
-
-    private Socket clientSocket;
-    private static int listServeur[] = Project.listServeur;
-
-    public HdfsServer(Socket clientSocket) {
-        this.clientSocket = clientSocket;
+public class HdfsServer{
+	private static int numPorts[]={3158, 3292, 3692, 3434, 3300, 3000};
+	private static int nbServeurs = 2;
+	
+    private static String readFileContents(String fileName) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+        }
+        return content.toString();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException{
         try {
-//        	for (int i:listServeur) {
-//	            int port = Project.listServeur[i];  //////////////////////////////////////
-//	            ServerSocket serverSocket = new ServerSocket(port);
-//	            System.out.println("Server started on port: " + args[0]);
-//	            while (true) {
-//	                Socket clientSocket = serverSocket.accept();
-//	                Thread t = new HdfsServer(clientSocket);
-//	                t.start();
-//	            }
-//        	}
-        	
-        	
-        	int port = Project.listServeur[2];  //////////////////////////////////////
-            ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("Server started on port du serveur 2: ");
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                Thread t = new HdfsServer(clientSocket);
-                t.start();
-            }
-        } catch (IOException e) {
+        	int i = 0;
+        	Scanner scanner = new Scanner(System.in);
+            String message;
+            message = scanner.nextLine();
+            int intValue = Integer.parseInt(message);
+            System.out.print(message);
+        	ServerSocket serverSocket = new ServerSocket(intValue);
+            while(true) {
+            	
+            	System.out.println("Server is listening on port" + intValue);
+            	Socket clientSocket = serverSocket.accept();
+            	System.out.println("Client connected.");
+            	ObjectInputStream objectIS = new ObjectInputStream(clientSocket.getInputStream());
+                String msg = (String) objectIS.readObject();
+            	//BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+            	i++;
+//            	if (i>nbServeurs) {
+//            		i=0;
+//            	}
+	            String commande;
+	            //commande = input.readLine();
+	            //System.out.println("Server received: " + msg);
+	            String[] mots = msg.split("@");
+	            System.out.println(mots[0]);
+	            int j=0;
+	            switch (mots[0]) {
+		            case "read":
+		            	System.out.println("READ DKHLAT");
+	                	File rFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\"+ "lol" + i + message +".txt");
+	                    BufferedReader bufReader = new BufferedReader(new FileReader(rFile));
+	                    String fragment = "";
+	                    String d = bufReader.readLine();
+	                    while (d != null) {
+	                        fragment = fragment + d + "\n";
+	                        d = bufReader.readLine();
+	                    }
+	                    ObjectOutputStream objectOS = new ObjectOutputStream(clientSocket.getOutputStream());
+	                    objectOS.writeObject(fragment);
+	                    bufReader.close();
+	                    objectOS.close();
+	                    break;
+	                case "write":
+	                	System.out.println("WRITE DKHLAT");
+	                    File wFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\"+ "lol" + i + message +".txt");
+	                    FileWriter fWriter = new FileWriter(wFile);
+	                    BufferedWriter writr = new BufferedWriter(fWriter);
+	                    writr.write(mots[2], 0, mots[2].length());
+	                    System.out.println("kherjat");
+	                    writr.close();
+	                    fWriter.close();
+	                    break;
+	                case "delete":
+	                	System.out.println("DELETE DKHLAT");
+	                	File file = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\"+ "lol" + i + message +".txt");
+                        file.delete();
+                        System.out.println("DELETE kherjat");
+                        break;
+	                default:
+	                    break;
+	            }
+	            // Close the connections
+	            objectIS.close();
+	            output.close();
+	            clientSocket.close();
+	            
+	        }
+	        //serverSocket.close();
+        }catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void run() {
-        try (
-            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
-            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream())
-        ) {
-        	String message = (String) ois.readObject();
-        	String[] tableau = message.split(":"); 
-            switch (tableau[0]) {
-                case "READ":
-                    handleRead(ois, oos);
-                    break;
-                case "WRITE":
-                    handleWrite(ois, oos);
-                    break;
-                case "DELETE":
-                    handleDelete(tableau[1], oos);
-                    break;
-                default:
-                    // Handle unknown command
-                    break;
-            }
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void handleRead(ObjectInputStream ois, ObjectOutputStream oos) throws IOException, ClassNotFoundException {
-    	String message = (String) ois.readObject();
-    	String[] tableau = message.split(":"); 
-
-        // Read the content of the file
-    	FileReader fr = new FileReader(tableau[1]);
-        BufferedReader buff = new BufferedReader(fr);
-        
-     // Message à envoyer
-        String str = new String();
-        String line;
-        while((line = buff.readLine()) != null){
-            str += line + "\n";
-        }
-        buff.close();
-        oos.writeObject(str);
-    }
-
-    private void handleWrite(ObjectInputStream ois, ObjectOutputStream oos) throws IOException, ClassNotFoundException {
-       
-    	// Read the filename from the client
-    	String message = (String) ois.readObject();
-    	String[] tableau = message.split(":"); 
-
-        // Read the format from the client
-        FileReaderWriter fileReaderWriter = new TxtFileRW(tableau[1]);
-
-        // Write key-value pairs to the file
-        Object receivedObject;
-        while ((receivedObject = ois.readObject()) instanceof KV) {
-        	fileReaderWriter.write((KV) receivedObject);
-        }
-
-        // Close the format
-        fileReaderWriter.close();
-    }
-
-    private void handleDelete(String filename, ObjectOutputStream oos) throws IOException, ClassNotFoundException {
-
-        deleteFile(filename);
-    }
-
-
-    private void deleteFile(String fileName) {
-        File file = new File(fileName);
-        if (file.exists()) {
-            file.delete();
         }
     }
 }
