@@ -55,7 +55,7 @@ public class HdfsClient {
                 String[] inter = hdfsFname.split("@");
                 ObjectOutputStream objectOS = new ObjectOutputStream(sock.getOutputStream());
                 //System.out.println("i"+Integer.toString(i)+"::::j::::"+Integer.toString(j));
-                objectOS.writeObject("delete" + "@" + hdfsFname + "_" + Integer.toString(i) + "." + "txt");
+                objectOS.writeObject("delete" + "@" + hdfsFname + "_" + Integer.toString(i) + "_"+ "." + "txt");
                 objectOS.close();
                 sock.close();
             }
@@ -66,30 +66,27 @@ public class HdfsClient {
     }
 	
 	public static void HdfsRead(String fileName) {
-		System.out.println("7araka1");
+		int nbfragments = nbFragments(fileName);
         File file = new File(fileName);
-        System.out.println("7araka2");
         try {
         	int j;
-        	System.out.println("7araka3");
             FileWriter fWrite = new FileWriter(file);
-            int nbfragments = 7;
-            System.out.println("lol");
+            //int nbfragments = 7;
             for (int i = 0; i < nbfragments; i++) {
-            	System.out.println("7araka4");
                 //System.out.println(Integer.toString(i));
                 j = i % nbServers;
-                System.out.println("7araka4" +  " " + j);
                 //System.out.println(Integer.toString(j));
                 Socket socket = new Socket (nomMachines[j], numPorts[j]);
                 System.out.println("Connected to server" + numPorts[j]);
                 ObjectOutputStream objectOS = new ObjectOutputStream(socket.getOutputStream());
-                objectOS.writeObject("read" + "@" + fileName + "_" + Integer.toString(i) + "." + "txt");
+                objectOS.writeObject("read" + "@" + fileName + "_" + Integer.toString(i) + "_"+ "." + "txt");
                 ObjectInputStream objectIS = new ObjectInputStream(socket.getInputStream());
                 String fragment = (String) objectIS.readObject();
+                System.out.println("FRAAAG :" +fragment);
                 fWrite.write(fragment,0,fragment.length());
                 objectIS.close();
                 objectOS.close();
+                objectOS.flush();
                 socket.close();
             }
             fWrite.close();
@@ -127,11 +124,12 @@ public class HdfsClient {
 	                System.out.println("Connected to server" + numPorts[t]);
 	                System.out.println(fragment);
 	                ObjectOutputStream objectOS = new ObjectOutputStream(socket.getOutputStream());
-	                objectOS.writeObject("write" + "@" + fileName + "_" + Integer.toString(i) + "." + "txt" + "@" + fragment);
+	                objectOS.writeObject("write" + "@" + fileName + "_" + Integer.toString(i) + "_" + "txt" + "@" + fragment);
 	                objectOS.flush();
                     objectOS.close();
                     socket.close();
             	}
+            	fichier.close();
             } else if (fmt == 1){
                 KVFileRW fichier = new KVFileRW(fileName);
                 fichier.open("read");
@@ -143,10 +141,10 @@ public class HdfsClient {
                         buffer = fichier.read();
                         if (buffer == null){break;}
                         fragment = fragment + buffer.v + "\n";
+                        System.out.println(fragment);
                         index = (int) (fichier.getIndex()-i*taille_fragment);
                     }                    
                     int t = i%nbServers;
-                    
                     Socket socket = new Socket (nomMachines[t], numPorts[t]);
                     System.out.println("Connected to server" + numPorts[t]);
                     System.out.println(fragment);
@@ -207,6 +205,7 @@ public class HdfsClient {
 //        HdfsWrite("C:\\Users\\33695\\eclipse-workspace\\test\\src\\test\\filesample.txt");
 //    }
 }
+
 
 
 

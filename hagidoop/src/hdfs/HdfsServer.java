@@ -55,12 +55,12 @@ public class HdfsServer{
 	            //commande = input.readLine();
 	            //System.out.println("Server received: " + msg);
 	            String[] mots = msg.split("@");
+	            String[] mots2 = msg.split("_");
 	            System.out.println(mots[0]);
 	            int j=0;
 	            switch (mots[0]) {
 		            case "read":
-		            	System.out.println("READ DKHLAT");
-	                	File rFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\"+ "lol" + i + message +".txt");
+	                	File rFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\filesample-" + mots2[1] +".txt");
 	                    BufferedReader bufReader = new BufferedReader(new FileReader(rFile));
 	                    String fragment = "";
 	                    String d = bufReader.readLine();
@@ -74,20 +74,16 @@ public class HdfsServer{
 	                    objectOS.close();
 	                    break;
 	                case "write":
-	                	System.out.println("WRITE DKHLAT");
-	                    File wFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\"+ "lol" + i + message +".txt");
+	                    File wFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\filesample-" + mots2[1] +".txt");
 	                    FileWriter fWriter = new FileWriter(wFile);
 	                    BufferedWriter writr = new BufferedWriter(fWriter);
 	                    writr.write(mots[2], 0, mots[2].length());
-	                    System.out.println("kherjat");
 	                    writr.close();
 	                    fWriter.close();
 	                    break;
 	                case "delete":
-	                	System.out.println("DELETE DKHLAT");
-	                	File file = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\"+ "lol" + i + message +".txt");
+	                	File file = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\filesample-" + mots2[1] +".txt");
                         file.delete();
-                        System.out.println("DELETE kherjat");
                         break;
 	                default:
 	                    break;
