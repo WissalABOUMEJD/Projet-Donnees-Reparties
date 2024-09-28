@@ -9,5 +9,6 @@ import interfaces.NetworkReaderWriter;
 
 public interface Worker extends Remote {
 	public void runMap (Map m, FileReaderWriter reader, FileReaderWriter writer) throws RemoteException;
-	//public int testt () throws RemoteException;
+	
+	public String getPath() throws RemoteException;
 }
