@@ -6,19 +6,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.*;
-import java .net.*;
+import config.Project;
 
 public class HdfsServer{
-	private static int numPorts[]={3158, 3292, 3692, 3434, 3300, 3000};
-	private static int nbServeurs = 2;
 	
-    private static String readFileContents(String fileName) throws IOException {
+	private static String readFileContents(String fileName) throws IOException {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -36,31 +33,27 @@ public class HdfsServer{
             String message;
             message = scanner.nextLine();
             int intValue = Integer.parseInt(message);
-            System.out.print(message);
+            //System.out.print(message);
         	ServerSocket serverSocket = new ServerSocket(intValue);
             while(true) {
             	
             	System.out.println("Server is listening on port" + intValue);
             	Socket clientSocket = serverSocket.accept();
-            	System.out.println("Client connected.");
+            	//System.out.println("Client connected.");
             	ObjectInputStream objectIS = new ObjectInputStream(clientSocket.getInputStream());
                 String msg = (String) objectIS.readObject();
-            	//BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
             	i++;
-//            	if (i>nbServeurs) {
-//            		i=0;
-//            	}
+
 	            String commande;
-	            //commande = input.readLine();
-	            //System.out.println("Server received: " + msg);
 	            String[] mots = msg.split("@");
 	            String[] mots2 = msg.split("_");
-	            System.out.println(mots[0]);
+	            //System.out.println(mots[0]);
 	            int j=0;
 	            switch (mots[0]) {
 		            case "read":
-	                	File rFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\filesample-" + mots2[1] +".txt");
+	                	File rFile = new File(Project.PATH+"//data//filesampleres-" + mots2[1] +".txt");
+	                	System.out.println(Project.PATH+"//data//filesampleres-" + mots2[1] +".txt");
 	                    BufferedReader bufReader = new BufferedReader(new FileReader(rFile));
 	                    String fragment = "";
 	                    String d = bufReader.readLine();
@@ -74,7 +67,8 @@ public class HdfsServer{
 	                    objectOS.close();
 	                    break;
 	                case "write":
-	                    File wFile = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\filesample-" + mots2[1] +".txt");
+	                    File wFile = new File(Project.PATH+"//data//filesample-" + mots2[1] +".txt");
+	                    System.out.println(Project.PATH+"//data//filesampleres-" + mots2[1] +".txt");
 	                    FileWriter fWriter = new FileWriter(wFile);
 	                    BufferedWriter writr = new BufferedWriter(fWriter);
 	                    writr.write(mots[2], 0, mots[2].length());
@@ -82,7 +76,7 @@ public class HdfsServer{
 	                    fWriter.close();
 	                    break;
 	                case "delete":
-	                	File file = new File("\\home\\wissal\\Bureau\\pdr\\Projet-Donnees-Reparties\\hagidoop\\src\\filesample-" + mots2[1] +".txt");
+	                	File file = new File(Project.PATH+"//data//filesample-" + mots2[1] +".txt");
                         file.delete();
                         break;
 	                default:
