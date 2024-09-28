@@ -51,10 +51,9 @@ public class HdfsClient {
             for (int i = 0; i < nbfragments; i++) {
             	j = i % nbServers;
                 Socket sock = new Socket (nomMachines[j], numPorts[j]);
-                System.out.println("Connected to server" + numPorts[j]);
+                //System.out.println("Connected to server" + numPorts[j]);
                 String[] inter = hdfsFname.split("@");
                 ObjectOutputStream objectOS = new ObjectOutputStream(sock.getOutputStream());
-                //System.out.println("i"+Integer.toString(i)+"::::j::::"+Integer.toString(j));
                 objectOS.writeObject("delete" + "@" + hdfsFname + "_" + Integer.toString(i) + "_"+ "." + "txt");
                 objectOS.close();
                 sock.close();
@@ -66,7 +65,7 @@ public class HdfsClient {
     }
 	
 	public static void HdfsRead(String fileName) {
-		int nbfragments = nbFragments(fileName);
+		int nbfragments = 7;
         File file = new File(fileName);
         try {
         	int j;
@@ -77,12 +76,12 @@ public class HdfsClient {
                 j = i % nbServers;
                 //System.out.println(Integer.toString(j));
                 Socket socket = new Socket (nomMachines[j], numPorts[j]);
-                System.out.println("Connected to server" + numPorts[j]);
+                //System.out.println("Connected to server" + numPorts[j]);
                 ObjectOutputStream objectOS = new ObjectOutputStream(socket.getOutputStream());
                 objectOS.writeObject("read" + "@" + fileName + "_" + Integer.toString(i) + "_"+ "." + "txt");
                 ObjectInputStream objectIS = new ObjectInputStream(socket.getInputStream());
                 String fragment = (String) objectIS.readObject();
-                System.out.println("FRAAAG :" +fragment);
+                //System.out.println("FRAAAG :" +fragment);
                 fWrite.write(fragment,0,fragment.length());
                 objectIS.close();
                 objectOS.close();
@@ -119,10 +118,10 @@ public class HdfsClient {
 	            		index = (int) (fichier.getIndex()-i*taille_fragment);
 	            	}
 	            	int t = i%nbServers;
-	            	System.out.println(numPorts[t]);
+	            	//System.out.println(numPorts[t]);
 	            	Socket socket = new Socket (nomMachines[t], numPorts[t]);
-	                System.out.println("Connected to server" + numPorts[t]);
-	                System.out.println(fragment);
+	                //System.out.println("Connected to server" + numPorts[t]);
+	                //System.out.println(fragment);
 	                ObjectOutputStream objectOS = new ObjectOutputStream(socket.getOutputStream());
 	                objectOS.writeObject("write" + "@" + fileName + "_" + Integer.toString(i) + "_" + "txt" + "@" + fragment);
 	                objectOS.flush();
@@ -146,8 +145,8 @@ public class HdfsClient {
                     }                    
                     int t = i%nbServers;
                     Socket socket = new Socket (nomMachines[t], numPorts[t]);
-                    System.out.println("Connected to server" + numPorts[t]);
-                    System.out.println(fragment);
+                    //System.out.println("Connected to server" + numPorts[t]);
+                    //System.out.println(fragment);
                     ObjectOutputStream objectOS = new ObjectOutputStream(socket.getOutputStream());
                     objectOS.writeObject("write" + "@" + fileName + "_" + Integer.toString(i) + "." + "txt" + "@" + fragment);
                     objectOS.flush();
@@ -163,47 +162,44 @@ public class HdfsClient {
     }
 	
 	
-    public static void main(String[] args) {
-        try {
-            // Read user input and send it to the server
-            Scanner scanner = new Scanner(System.in);
-            String message;
-
-            do {
-                System.out.print("Enter message (or 'exit' to quit): ");
-                message = scanner.nextLine();
-                //output.println(message);
-                String[] mssg = message.split(" ");
-                // Receive and print the server's response
-                //String serverResponse = input.readLine();
-                //System.out.println("Server: " + serverResponse);
-
-                // If the command is "read," print the file contents
-                if (message.startsWith("read")) {
-                	HdfsRead(mssg[1]);
-                	System.out.println("REAAAAAD");
-                }
-                else if (message.startsWith("write")) {
-                	HdfsWrite(0, mssg[1]);
-                }
-                else if (message.startsWith("delete")) {
-                	System.out.println("DELEEEETE");
-                	HdfsDelete(mssg[1]);
-                }
-            } while (!message.equalsIgnoreCase("exit"));
-
-            // Close the connections
-//            input.close();
-//            output.close();
-//            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-	
-//	public static void main(String[] args) {
-//        HdfsWrite("C:\\Users\\33695\\eclipse-workspace\\test\\src\\test\\filesample.txt");
+//    public static void main(String[] args) {
+//        try {
+//            // Read user input and send it to the server
+//            Scanner scanner = new Scanner(System.in);
+//            String message;
+//
+//            do {
+//                System.out.print("Enter message (or 'exit' to quit): ");
+//                message = scanner.nextLine();
+//                //output.println(message);
+//                String[] mssg = message.split(" ");
+//                // Receive and print the server's response
+//                //String serverResponse = input.readLine();
+//                //System.out.println("Server: " + serverResponse);
+//
+//                // If the command is "read," print the file contents
+//                if (message.startsWith("read")) {
+//                	HdfsRead(mssg[1]);
+//                	System.out.println("REAAAAAD");
+//                }
+//                else if (message.startsWith("write")) {
+//                	HdfsWrite(0, mssg[1]);
+//                }
+//                else if (message.startsWith("delete")) {
+//                	System.out.println("DELEEEETE");
+//                	HdfsDelete(mssg[1]);
+//                }
+//            } while (!message.equalsIgnoreCase("exit"));
+//
+//            // Close the connections
+////            input.close();
+////            output.close();
+////            socket.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 //    }
+	
 }
 
 
