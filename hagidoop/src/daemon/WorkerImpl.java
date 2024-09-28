@@ -8,6 +8,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import interfaces.FileReaderWriter;
 import interfaces.Map;
@@ -19,7 +21,12 @@ public class WorkerImpl extends UnicastRemoteObject implements Worker {
     protected WorkerImpl() throws RemoteException {
         super();
     }
-
+    
+    public String getPath() throws RemoteException{
+    	Path path = Paths.get("");
+    	String currPath = path.toAbsolutePath().toString();
+    	return currPath;
+    }
 
 	@Override
 	public void runMap(Map m, FileReaderWriter reader, FileReaderWriter writer) throws RemoteException {
